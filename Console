@@ -1,0 +1,239 @@
+// Java1531.java
+// This uses the <Rectangle> class with the 
+// <inside> method to determine if a certain 
+// square has been clicked.
+import java.applet.Applet;
+import java.awt.*;
+
+public class Console extends Applet
+{
+	/* Things to add 
+	 * Spelling Tool
+	 * Spell Checker
+	 * Change Colors
+	 * Sounds for Nate
+	 * Deactivate fill tool
+	 */
+	Rectangle rectangleTool, lineTool, circleTool, clearTool, freeTool, specialButton, fillTool;
+	int numTool = 0;
+	int startX;
+	int startY;
+	int endX;
+	int endY;
+	int dragX;
+	int dragY;
+	int dragActive = 0;
+	int fillActive = 0;
+	
+	public void init()
+	{
+		rectangleTool = new Rectangle(25,25,75,75);
+		lineTool = new Rectangle(150,25,75,75);
+		circleTool = new Rectangle(275, 25,75,75);
+		clearTool = new Rectangle(900,25,75,75);
+		specialButton = new Rectangle(15,600,15,15);
+		freeTool = new Rectangle(400,25,75,75);
+		fillTool = new Rectangle(525,25,75,75);
+	}
+
+	public boolean mouseDown(Event e, int x, int y)
+	{
+		
+		startX = x;
+		startY = y;
+		endX = startX;
+		endY = startY;
+		
+		if(rectangleTool.inside(x,y))
+			numTool = 1;
+		else if(lineTool.inside(x,y))
+			numTool = 2;
+		else if(circleTool.inside(x,y))
+			numTool = 3;
+		else if(clearTool.inside(x,y))
+			numTool = 4;
+		else if(specialButton.inside(x,y))
+			numTool= 5;
+		else if(freeTool.inside(x, y))
+			numTool=6;
+		else if(fillTool.inside(x, y))
+				fillActive=1;
+		return true;
+	}
+	
+	public boolean mouseDrag(Event e, int x, int y){
+		
+		dragActive = 1;
+		dragX = x;
+		dragY = y;
+		repaint();
+		return true;
+	}
+	
+	public boolean mouseUp(Event e, int x, int y)
+	{
+		
+		endX = x;
+		endY = y;
+		repaint();
+		return true;
+	}
+	public int getDistance(int x1, int y1, int x2, int y2)
+	{
+		double distance = Math.sqrt(Math.pow(x2-x1,2) + Math.pow(y2-y1,2));
+		return (int) distance;
+	}
+	public void paint(Graphics g)
+	{
+		Expo.setFont(g,"Arial",Font.BOLD,15);
+		Expo.setColor(g,Expo.darkerRed); //Rectangletool
+		Expo.fillRectangle(g,25,25,100,100);
+		Expo.drawString(g,"Rectangle", 27, 20);
+		Expo.setColor(g,Expo.darkerGreen); //linetool
+		Expo.fillRectangle(g,150,25,225,100);
+		Expo.drawString(g,"Line", 170, 20);
+		Expo.setColor(g,Expo.darkerBlue);//circletool
+		Expo.fillRectangle(g,275,25,350,100);
+		Expo.drawString(g,"Circle", 293, 20);
+		Expo.setColor(g, Expo.yellow);//clearbutton
+		Expo.fillRectangle(g, 900, 25, 975, 100);
+		Expo.drawString(g,"Clear", 922, 20);
+		Expo.setColor(g, Expo.darkerMagenta);//freeflow
+		Expo.fillRectangle(g, 400, 25, 475, 100);
+		Expo.drawString(g,"Free Flow", 403, 20);
+		Expo.setColor(g, Expo.darkerOrange);//filltool
+		Expo.fillRectangle(g, 525, 25, 600, 100);
+		Expo.drawString(g,"Fill", 552, 20);
+		Expo.setFont(g,"Arial",Font.BOLD,28);
+		
+		switch (numTool)
+		{			
+			case 1:	 //Rectangle Tool
+				Expo.setColor(g, Expo.white);
+				Expo.fillRectangle(g, 650, 625, 1000, 650);
+				Expo.setColor(g,Expo.lighterRed);
+				Expo.fillRectangle(g,25,25,100,100);
+				Expo.setColor(g,Expo.black);	
+				Expo.drawString(g,"Rectangle Tool Activated",650,646);
+				
+				if(fillActive == 1)
+				{
+					Expo.fillRectangle(g, startX, startY, endX, endY);
+					Expo.setColor(g, Expo.lighterOrange);
+					Expo.fillRectangle(g, 525, 25, 600, 100);
+				}
+				else
+				{
+					Expo.drawRectangle(g, startX, startY, endX, endY);
+				}
+				if(dragActive == 1)
+				{				
+					Expo.setColor(g, Expo.black);
+					Expo.drawRectangle(g, startX, startY, dragX, dragY);
+					Expo.delay(75);
+					Expo.setColor(g, Expo.white);
+					Expo.drawRectangle(g, startX, startY, dragX, dragY);
+					Expo.setColor(g, Expo.black);
+					dragActive = 0;
+				}
+				break;
+				
+			case 2: //Line  Tool
+				Expo.setColor(g, Expo.white);
+				Expo.fillRectangle(g, 650, 625, 1000, 650);
+				Expo.setColor(g,Expo.lighterGreen);
+				Expo.fillRectangle(g,150,25,225,100);
+				Expo.setColor(g,Expo.black);
+				Expo.drawLine(g, startX, startY, endX, endY);
+				Expo.drawString(g,"Line Tool Activated",725,650);
+				if(dragActive == 1)
+				{
+					
+					Expo.setColor(g, Expo.black);
+					Expo.drawLine(g, startX, startY, dragX, dragY);
+					Expo.delay(75);
+					Expo.setColor(g, Expo.white);
+					Expo.drawLine(g, startX, startY, dragX, dragY);
+					Expo.setColor(g, Expo.black);
+					dragActive = 0;
+				}
+				
+				break;
+			case 3:  //Circle Tool
+				int rad;
+				rad = getDistance(startX,startY,dragX,dragY);;
+				Expo.setColor(g,  Expo.white);
+				Expo.fillRectangle(g, 650, 625, 1000, 650);
+				Expo.setColor(g,Expo.lighterBlue);
+				Expo.fillRectangle(g,275,25,350,100);
+				Expo.setColor(g, Expo.black);
+				Expo.drawString(g, "Circle Tool Activated", 715, 650);
+				if(fillActive == 1)
+				{
+					Expo.fillCircle(g, startX, startY, rad);
+					Expo.setColor(g, Expo.lighterOrange);
+					Expo.fillRectangle(g, 525, 25, 600, 100);
+				}
+				else
+				{
+					Expo.drawCircle(g, startX, startY, rad);
+				}
+			
+				if(dragActive == 1)
+				{
+					
+					Expo.setColor(g, Expo.black);
+					Expo.drawCircle(g, startX, startY, rad);
+					Expo.delay(75);
+					Expo.setColor(g, Expo.white);
+					Expo.drawCircle(g, startX, startY, rad);
+					Expo.setColor(g, Expo.black);
+					dragActive = 0;
+				}
+				break;
+			case 4: // Clear tool
+				Expo.setColor(g,Expo.white);
+				Expo.fillRectangle(g, 0, 0, 50000, 50000); 
+				Expo.setColor(g,Expo.black);
+				Expo.drawString(g,"Cleared!",850,650);
+				Expo.setFont(g,"Arial",Font.BOLD,15);
+				Expo.setColor(g,Expo.darkerRed); //Rectangletool
+				Expo.fillRectangle(g,25,25,100,100);
+				Expo.drawString(g,"Rectangle", 27, 20);
+				Expo.setColor(g,Expo.darkerGreen); //linetool
+				Expo.fillRectangle(g,150,25,225,100);
+				Expo.drawString(g,"Line", 170, 20);
+				Expo.setColor(g,Expo.darkerBlue);//circletool
+				Expo.fillRectangle(g,275,25,350,100);
+				Expo.drawString(g,"Circle", 293, 20);
+				Expo.setColor(g, Expo.darkerMagenta);//freeflow
+				Expo.fillRectangle(g, 400, 25, 475, 100);
+				Expo.drawString(g,"Free Flow", 403, 20);
+				Expo.setColor(g, Expo.darkerOrange);//filltool
+				Expo.fillRectangle(g, 525, 25, 600, 100);
+				Expo.drawString(g,"Fill", 552, 20);
+				fillActive = 0;
+				break;
+			case 5:
+				Expo.setColor(g,  Expo.white);
+				Expo.fillRectangle(g, 650, 625, 1000, 650);
+				Expo.setColor(g, Expo.black);
+				Expo.drawString(g, "Hooray!!! You found the Hidden Button", 200, 200);
+			case 6:
+				Expo.setColor(g,Expo.white);
+				Expo.fillRectangle(g, 650, 625, 1000, 650); 
+				Expo.setColor(g, Expo.lighterMagenta);
+				Expo.fillRectangle(g, 400, 25, 475, 100);
+				Expo.setColor(g, Expo.black);
+				Expo.drawString(g,"Freeflow Tool Activated", 675, 650);
+				for(int k=0; k < 25; k++)
+				{
+				Expo.drawPoint(g, dragX, dragY);
+				}
+				break;
+		}
+		
+	}
+	public void update(Graphics g) {paint(g);}
+	
+}
